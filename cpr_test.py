@@ -33,5 +33,5 @@ energy_site = """<EnergySite Name="Sample 1-Min Site" Description="Pensacola">
     </EnergySite>"""
 
 a = CPRSolarForecast(energy_site, userName, password, querykey)
-#print a.get_1_min_forecast()
-print a.get_30_min_forecast()
+print a.get_1_min_forecast()
+#print a.get_30_min_forecast()

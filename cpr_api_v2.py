@@ -29,6 +29,13 @@ class CPRSolarForecast:
     querystring = {'key': None}
 
     def __init__(self, energy_site, un, pw, key):
+        """CPRSolarForecast instance requires the following parameters:
+            energy_site: a string containing the XML for the EnergySite(s) as
+                         defined by CPR's API
+            un: Basic Auth account username
+            pw: Basic Auth account password
+            key: Client key provided by CPR
+        """
         self.energy_site = energy_site
         self.username = un
         self.password = pw
@@ -99,11 +106,27 @@ class CPRSolarForecast:
         return None
 
     def get_1_min_forecast(self, utc_start=datetime.utcnow(), utc_end=datetime.utcnow() + timedelta(minutes=30)):
+        """get_1_min_forecast returns a list of dictionaries. Each dict includes
+           the simulation results as predicted by the CPR SolarAnywhere API. Each
+           dict will always include a StartTime and EndTime key with values
+           as datetime objects with the time in UTC. Note that tzinfo is not set
+           for these objects.
+           By default, the overall simulation start (utc_start) is now and the
+           simulation end (utc_end) is now+30 minutes.
+        """
         start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
         end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 1)
 
     def get_30_min_forecast(self, utc_start=datetime.utcnow(), utc_end=datetime.utcnow() + timedelta(days=1)):
+        """get_30_min_forecast returns a list of dictionaries. Each dict includes
+           the simulation results as predicted by the CPR SolarAnywhere API. Each
+           dict will always include a StartTime and EndTime key with values
+           as datetime objects with the time in UTC. Note that tzinfo is not set
+           for these objects.
+           By default, the overall simulation start (utc_start) is now and the
+           simulation end (utc_end) is now+1 day.
+        """
         start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
         end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 30)
