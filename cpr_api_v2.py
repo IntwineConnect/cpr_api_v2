@@ -34,6 +34,34 @@ class CPRSolarForecast:
         self.password = pw
         self.querystring['key'] = key
 
+    def parse_results(self, output):
+        def time_to_utc(t):
+            ret = datetime.strptime(t[0:19], '%Y-%m-%dT%H:%M:%S')
+            if t[19] == '+':
+                ret -= timedelta(hours=int(t[20:22]), minutes=int(t[23:25]))
+            elif t[19] == '-':
+                ret += timedelta(hours=int(t[20:22]), minutes=int(t[23:25]))
+            return ret
+
+        def clean_attrib(d):
+            map = {'WindSpeed_MetersPerSecond': int,
+                   'AmbientTemperature_DegreesC': int,
+                   'PowerAC_kW': float,
+                   'GlobalHorizontalIrradiance_WattsPerMeterSquared': int,
+                   'StartTime': time_to_utc,
+                   'EndTime': time_to_utc}
+            for k, v in d.iteritems():
+                d[k] = map[k](v)
+            return d
+
+        root = ET.fromstring(output)
+
+        result = []
+        for period in root[0][0][1]:
+            result.append(clean_attrib(period.attrib))
+
+        return result
+
     def send_query(self, ts, te, dt):
         payload = self.payload.format(self.energy_site, ts, te, dt)
         response = requests.post(self.url,
@@ -65,7 +93,7 @@ class CPRSolarForecast:
             if DEBUG: print(status)
             if status == "Done":
                 if DEBUG: print data.content
-                return data.content
+                return self.parse_results(data.content)
             else:
                 requestNumber = requestNumber + 1
         return None
