@@ -17,10 +17,9 @@ class CPRSolarForecast:
     url = "https://service.solaranywhere.com/api/v2/Simulation"
     url2 = "https://service.solaranywhere.com/api/v2/SimulationResult/"
 
-    headers = {
-     'content-type': "text/xml; charset=utf-8",
-     'content-length': "length",
-     }
+    headers = {'content-type': "text/xml; charset=utf-8",
+               'content-length': "length"
+              }
     payload = """<CreateSimulationRequest xmlns="http://service.solaranywhere.com/api/v2"><EnergySites>{}</EnergySites><SimulationOptions PowerModel="CprPVForm" ShadingModel="ShadeSimulator" OutputFields="StartTime,EndTime,PowerAC_kW,GlobalHorizontalIrradiance_WattsPerMeterSquared,AmbientTemperature_DegreesC,WindSpeed_MetersPerSecond"><WeatherDataOptions WeatherDataSource="SolarAnywhere3_2" WeatherDataPreference = "Auto" PerformTimeShifting = "false" StartTime="{}" EndTime="{}" SpatialResolution_Degrees="0.01" TimeResolution_Minutes="{}"/></SimulationOptions></CreateSimulationRequest>"""
     energy_site = None
 
@@ -42,6 +41,9 @@ class CPRSolarForecast:
                                  data=payload,
                                  headers=self.headers,
                                  params=self.querystring)
+        if not response.ok:
+            raise(requests.HTTPError(response.status_code, response.reason))
+
         root = ET.fromstring(response.content)
         return root.attrib.get("SimulationId")
 
@@ -55,6 +57,9 @@ class CPRSolarForecast:
             time.sleep(5)
             data = requests.get(self.url2 + publicId,
                                 auth=HTTPBasicAuth(self.username, self.password))
+            if not data.ok:
+                raise (requests.HTTPError(data.status_code, data.reason))
+
             radicle = ET.fromstring(data.content)
             status = radicle.attrib.get("Status")
             if DEBUG: print(status)
