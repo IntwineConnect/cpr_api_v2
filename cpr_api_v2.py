@@ -61,8 +61,17 @@ class CPRSolarForecast:
                 d[k] = map[k](v)
             return d
 
-        root = ET.fromstring(output)
+        def good_result(root):
+            if root[0][0].attrib['Status'] == 'Failure':
+                msg = root[0][0][0][0].attrib['Message']
+                code = root[0][0][0][0].attrib['StatusCode']
+                raise RuntimeError("SolarAnywhere " + code + ': ' + msg)
+            else:
+                return True
 
+        root = ET.fromstring(output)
+        if not good_result(root):
+            return False
         result = []
         for period in root[0][0][1]:
             result.append(clean_attrib(period.attrib))
