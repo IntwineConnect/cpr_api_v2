@@ -114,7 +114,7 @@ class CPRSolarForecast:
                 requestNumber = requestNumber + 1
         return None
 
-    def get_1_min_forecast(self, utc_start=datetime.utcnow(), utc_end=datetime.utcnow() + timedelta(minutes=30)):
+    def get_1_min_forecast(self, utc_start=None, utc_end=None):
         """get_1_min_forecast returns a list of dictionaries. Each dict includes
            the simulation results as predicted by the CPR SolarAnywhere API. Each
            dict will always include a StartTime and EndTime key with values
@@ -123,11 +123,16 @@ class CPRSolarForecast:
            By default, the overall simulation start (utc_start) is now and the
            simulation end (utc_end) is now+30 minutes.
         """
+        if utc_start is None:
+            utc_start = datetime.utcnow()
+        if utc_end is None:
+            utc_end = datetime.utcnow() + timedelta(minutes=30)
+
         start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
         end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 1)
 
-    def get_30_min_forecast(self, utc_start=datetime.utcnow(), utc_end=datetime.utcnow() + timedelta(days=1)):
+    def get_30_min_forecast(self, utc_start=None, utc_end=None):
         """get_30_min_forecast returns a list of dictionaries. Each dict includes
            the simulation results as predicted by the CPR SolarAnywhere API. Each
            dict will always include a StartTime and EndTime key with values
@@ -136,6 +141,11 @@ class CPRSolarForecast:
            By default, the overall simulation start (utc_start) is now and the
            simulation end (utc_end) is now+1 day.
         """
+        if utc_start is None:
+            utc_start = datetime.utcnow()
+        if utc_end is None:
+            utc_end = datetime.utcnow() + timedelta(days=1)
+
         start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
         end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 30)
