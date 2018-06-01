@@ -114,6 +114,10 @@ class CPRSolarForecast:
                 requestNumber = requestNumber + 1
         return None
 
+    def round_next_minute(self, ts):
+        next_min = ts.minute+1
+        return ts.replace(minute=next_min,second=0,microsecond=0)
+
     def get_1_min_forecast(self, utc_start=None, utc_end=None):
         """get_1_min_forecast returns a list of dictionaries. Each dict includes
            the simulation results as predicted by the CPR SolarAnywhere API. Each
@@ -128,8 +132,8 @@ class CPRSolarForecast:
         if utc_end is None:
             utc_end = datetime.utcnow() + timedelta(minutes=30)
 
-        start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
-        end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
+        start_time = self.round_next_minute(utc_start).isoformat() + "-00:00"
+        end_time = self.round_next_minute(utc_end).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 1)
 
     def get_30_min_forecast(self, utc_start=None, utc_end=None):
@@ -146,6 +150,6 @@ class CPRSolarForecast:
         if utc_end is None:
             utc_end = datetime.utcnow() + timedelta(days=1)
 
-        start_time = utc_start.replace(microsecond=0).isoformat() + "-00:00"
-        end_time = utc_end.replace(microsecond=0).isoformat() + "-00:00"
+        start_time = self.round_next_minute(utc_start).isoformat() + "-00:00"
+        end_time = self.round_next_minute(utc_end).isoformat() + "-00:00"
         return self.execute(start_time, end_time, 30)
