@@ -115,8 +115,8 @@ class CPRSolarForecast:
         return None
 
     def round_next_minute(self, ts):
-        next_min = ts.minute+1
-        return ts.replace(minute=next_min,second=0,microsecond=0)
+        dt = timedelta(minutes=1)
+        return ts.replace(second=0, microsecond=0)+dt
 
     def get_1_min_forecast(self, utc_start=None, utc_end=None):
         """get_1_min_forecast returns a list of dictionaries. Each dict includes
